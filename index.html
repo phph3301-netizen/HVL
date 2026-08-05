@@ -349,44 +349,49 @@ list.appendChild(div);
 
 }
 
-function playSong(index){
+async function playSong(index){
 
-currentIndex = index;
+    currentIndex = index;
 
-const song = currentSongs[index];
+    const song = currentSongs[index];
 
-title.textContent = song.title;
+    title.textContent = song.title;
 
-video.pause();
-audio.pause();
+    // Dừng media đang phát
+    if(!video.paused){
+        video.pause();
+    }
 
-video.removeAttribute("src");
-audio.removeAttribute("src");
+    if(!audio.paused){
+        audio.pause();
+    }
 
-video.style.display = "none";
-audio.style.display = "none";
+    video.style.display = "none";
+    audio.style.display = "none";
 
-if(song.file.toLowerCase().endsWith(".mp4")){
+    if(song.file.toLowerCase().endsWith(".mp4")){
 
-video.style.display = "block";
+        video.style.display = "block";
+        video.src = song.file;
 
-video.src = song.file;
+        try{
+            await video.play();
+        }catch(e){
+            console.error(e);
+        }
 
-video.load();
+    }else{
 
-video.play().catch(console.error);
+        audio.style.display = "block";
+        audio.src = song.file;
 
-}else{
+        try{
+            await audio.play();
+        }catch(e){
+            console.error(e);
+        }
 
-audio.style.display = "block";
-
-audio.src = song.file;
-
-audio.load();
-
-audio.play().catch(console.error);
-
-}
+    }
 
 }
 search.addEventListener("input",()=>{
