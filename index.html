@@ -71,7 +71,18 @@ background:#444;
 </head>
 
 <body>
+<div id="home">
+    <h1>Chọn Album</h1>
 
+    <button onclick="openAlbum('HVL')">
+        🎵 HVL
+    </button>
+
+    <button onclick="openAlbum('99%')">
+        🎵 99%
+    </button>
+</div>
+    
 <div id="player">
 
 <video id="video" controls playsinline webkit-playsinline preload="auto">
@@ -147,6 +158,8 @@ const albums = {
 ]
 
 };
+let currentAlbum = "HVL";
+let videos = albums[currentAlbum];
 const list=document.getElementById("list");
 const video=document.getElementById("video");
 const source=document.getElementById("source");
@@ -170,16 +183,20 @@ function load(arr){
         list.appendChild(div);
     });
 }
-
+function changeAlbum(name){
+    currentAlbum = name;
+    videos = albums[name];
+    load(videos);
+}
 search.addEventListener("input",()=>{
     const keyword=search.value.toLowerCase();
-    load(videos.filter(v=>v.title.toLowerCase().includes(keyword)));
+   load(videos.filter(v => v.title.toLowerCase().includes(keyword)));
 });
 
-load(videos);
+changeAlbum("HVL");
 function playRandom(){
-    const random=Math.floor(Math.random()*videos.length);
-    const v=videos[random];
+    const random = Math.floor(Math.random() * videos.length);
+    const v = videos[random];
 
     source.src=v.file;
     video.load();
