@@ -287,69 +287,77 @@ let currentIndex = -1;
 
 const home = document.getElementById("home");
 const app = document.getElementById("app");
-
 const list = document.getElementById("list");
 
 const video = document.getElementById("video");
-
 const audio = document.getElementById("audio");
 
 const title = document.getElementById("title");
-
 const search = document.getElementById("search");
 
 function openAlbum(name){
 
-currentAlbum = name;
-currentSongs = albums[name].songs;
+    currentAlbum = name;
+    currentSongs = [...albums[name].songs];
 
-home.style.display="none";
-app.style.display="flex";
+    home.style.display = "none";
+    app.style.display = "flex";
 
-search.value="";
+    currentIndex = -1;
+    search.value = "";
 
-currentIndex = -1;
-renderList(currentSongs);
+    renderList(currentSongs);
 
 }
 
 function backHome(){
 
-video.pause();
-audio.pause();
+    video.pause();
+    audio.pause();
 
-home.style.display="flex";
-app.style.display="none";
+    video.removeAttribute("src");
+    audio.removeAttribute("src");
+
+    video.load();
+    audio.load();
+
+    home.style.display = "flex";
+    app.style.display = "none";
 
 }
 
 function renderList(arr){
 
-list.innerHTML="";
+    list.innerHTML = "";
 
-arr.forEach((song,index)=>{
+    arr.forEach(song=>{
 
-const div=document.createElement("div");
+        const div = document.createElement("div");
 
-div.className="item";
+        div.className = "item";
+        div.textContent = song.title;
 
-div.textContent=song.title;
+        div.onclick = ()=>{
 
-div.onclick = () => {
+            const index = currentSongs.findIndex(s=>s.file===song.file);
 
-currentIndex = currentSongs.findIndex(s => s.file === song.file);
+            if(index!==-1){
 
-playSong(currentIndex);
+                playSong(index);
 
-};
+            }
 
-list.appendChild(div);
+        };
 
-});
+        list.appendChild(div);
+
+    });
 
 }
 
 async function playSong(index){
+
+    if(index<0 || index>=currentSongs.length) return;
 
     currentIndex = index;
 
@@ -357,14 +365,14 @@ async function playSong(index){
 
     title.textContent = song.title;
 
-    // Dừng media đang phát
-    if(!video.paused){
-        video.pause();
-    }
+    video.pause();
+    audio.pause();
 
-    if(!audio.paused){
-        audio.pause();
-    }
+    video.removeAttribute("src");
+    audio.removeAttribute("src");
+
+    video.load();
+    audio.load();
 
     video.style.display = "none";
     audio.style.display = "none";
@@ -375,9 +383,13 @@ async function playSong(index){
         video.src = song.file;
 
         try{
+
             await video.play();
-        }catch(e){
-            console.error(e);
+
+        }catch(err){
+
+            console.error(err);
+
         }
 
     }else{
@@ -386,9 +398,13 @@ async function playSong(index){
         audio.src = song.file;
 
         try{
+
             await audio.play();
-        }catch(e){
-            console.error(e);
+
+        }catch(err){
+
+            console.error(err);
+
         }
 
     }
@@ -396,68 +412,81 @@ async function playSong(index){
 }
 search.addEventListener("input",()=>{
 
-const keyword=search.value.toLowerCase();
+    const keyword = search.value.toLowerCase();
 
-renderList(
+    const result = currentSongs.filter(song=>
+        song.title.toLowerCase().includes(keyword)
+    );
 
-currentSongs.filter(song=>
-
-song.title.toLowerCase().includes(keyword)
-
-)
-
-);
+    renderList(result);
 
 });
 
+
 function playRandom(){
 
-if(currentSongs.length===0) return;
+    if(currentSongs.length===0) return;
 
-const random=Math.floor(Math.random()*currentSongs.length);
+    const random = Math.floor(
+        Math.random() * currentSongs.length
+    );
 
-playSong(random);
+    playSong(random);
 
 }
 
-document.getElementById("randomBtn").onclick=playRandom;
+
+document.getElementById("randomBtn").onclick = playRandom;
+
+
 
 function nextSong(){
 
-if(currentSongs.length===0) return;
+    if(currentSongs.length===0) return;
 
-currentIndex++;
+    currentIndex++;
 
-if(currentIndex>=currentSongs.length){
+    if(currentIndex >= currentSongs.length){
 
-currentIndex=0;
+        currentIndex = 0;
+
+    }
+
+    playSong(currentIndex);
 
 }
 
-playSong(currentIndex);
 
-}
 
 function prevSong(){
 
-if(currentSongs.length===0) return;
+    if(currentSongs.length===0) return;
 
-currentIndex--;
+    currentIndex--;
 
-if(currentIndex<0){
+    if(currentIndex < 0){
 
-currentIndex=currentSongs.length-1;
+        currentIndex = currentSongs.length - 1;
+
+    }
+
+    playSong(currentIndex);
 
 }
 
-playSong(currentIndex);
 
-}
 
-video.addEventListener("ended",nextSong);
+video.addEventListener("ended",()=>{
 
-audio.addEventListener("ended",nextSong);
-</script>
+    nextSong();
 
+});
+
+
+audio.addEventListener("ended",()=>{
+
+    nextSong();
+
+});
 </body>
 </html>
