@@ -80,6 +80,8 @@ background:#444;
 
 <h2 id="title">Chọn video để phát</h2>
 
+<button id="randomBtn">🎲 Phát ngẫu nhiên</button>
+    
 </div>
 
 <div id="sidebar">
@@ -152,6 +154,20 @@ search.addEventListener("input",()=>{
 });
 
 load(videos);
+function playRandom(){
+    const random=Math.floor(Math.random()*videos.length);
+    const v=videos[random];
+
+    source.src=v.file;
+    video.load();
+    video.play();
+    title.textContent=v.title;
+}
+
+document.getElementById("randomBtn").onclick=playRandom;
+
+// Tự phát bài ngẫu nhiên tiếp theo khi hết bài
+video.addEventListener("ended",playRandom);
 </script>
 </body>
 </html>
