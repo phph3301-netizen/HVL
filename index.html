@@ -353,38 +353,40 @@ list.appendChild(div);
 
 function playSong(index){
 
-currentIndex=index;
+currentIndex = index;
 
-const song=currentSongs[index];
+const song = currentSongs[index];
 
-title.textContent=song.title;
-
-const file=song.file.toLowerCase();
+title.textContent = song.title;
 
 video.pause();
 audio.pause();
 
-if(file.endsWith(".mp4")){
+video.removeAttribute("src");
+audio.removeAttribute("src");
 
-audio.style.display="none";
-video.style.display="block";
+video.style.display = "none";
+audio.style.display = "none";
 
-videoSource.src=song.file;
+if(song.file.toLowerCase().endsWith(".mp4")){
+
+video.style.display = "block";
+
+videoSource.src = song.file;
 
 video.load();
 
-video.play();
+video.play().catch(console.error);
 
 }else{
 
-video.style.display="none";
-audio.style.display="block";
+audio.style.display = "block";
 
-audioSource.src=song.file;
+audioSource.src = song.file;
 
 audio.load();
 
-audio.play();
+audio.play().catch(console.error);
 
 }
 
