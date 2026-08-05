@@ -10,15 +10,65 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial;
+font-family:Arial,sans-serif;
 }
 
 body{
 background:#111;
-color:white;
-display:flex;
+color:#fff;
 height:100vh;
 overflow:hidden;
+}
+
+button,input{
+font-family:inherit;
+}
+
+#home{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:30px;
+height:100vh;
+padding:30px;
+flex-wrap:wrap;
+}
+
+.album{
+width:260px;
+background:#1f1f1f;
+border-radius:18px;
+padding:20px;
+cursor:pointer;
+transition:.25s;
+text-align:center;
+}
+
+.album:hover{
+transform:scale(1.04);
+background:#2a2a2a;
+}
+
+.album img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+border-radius:14px;
+margin-bottom:15px;
+}
+
+.album h2{
+margin-bottom:8px;
+}
+
+.album p{
+opacity:.7;
+}
+
+#app{
+display:none;
+height:100vh;
+display:flex;
 }
 
 #player{
@@ -30,69 +80,131 @@ padding:20px;
 
 video{
 width:100%;
-height:75vh;
-background:black;
+height:70vh;
+background:#000;
 border-radius:12px;
 }
 
-h2{
-margin-top:15px;
+#audio{
+display:none;
+width:100%;
+margin-top:10px;
+}
+
+#title{
+margin:15px 0;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:15px;
+}
+
+.controls button{
+padding:10px 16px;
+border:none;
+border-radius:8px;
+background:#333;
+color:white;
+cursor:pointer;
+}
+
+.controls button:hover{
+background:#555;
 }
 
 #sidebar{
 flex:1;
-background:#1b1b1b;
-overflow-y:auto;
+background:#1a1a1a;
 padding:15px;
+overflow-y:auto;
 }
 
-input{
+#search{
 width:100%;
 padding:10px;
 border:none;
 border-radius:8px;
 margin-bottom:15px;
-font-size:16px;
 }
 
 .item{
 padding:12px;
-border-radius:8px;
-cursor:pointer;
-margin-bottom:8px;
 background:#2b2b2b;
+border-radius:8px;
+margin-bottom:8px;
+cursor:pointer;
 transition:.2s;
 }
 
 .item:hover{
 background:#444;
 }
+
+@media(max-width:900px){
+
+#app{
+flex-direction:column;
+}
+
+video{
+height:38vh;
+}
+
+#sidebar{
+height:40vh;
+}
+
+}
 </style>
 </head>
 
 <body>
+
 <div id="home">
-    <h1>Chọn Album</h1>
 
-    <button onclick="openAlbum('HVL')">
-        🎵 HVL
-    </button>
-
-    <button onclick="openAlbum('99%')">
-        🎵 99%
-    </button>
+<div class="album" onclick="openAlbum('HVL')">
+<img src="cover-hvl.jpg">
+<h2>HVL</h2>
+<p>Thêm mô tả</p>
 </div>
-    
+
+<div class="album" onclick="openAlbum('99%')">
+<img src="cover-99.jpg">
+<h2>99%</h2>
+<p>Thêm mô tả</p>
+</div>
+
+</div>
+
+<div id="app">
+
 <div id="player">
 
 <video id="video" controls playsinline webkit-playsinline preload="auto">
-<source id="source" src="">
+<source id="videoSource">
 </video>
 
-<h2 id="title">Chọn video để phát</h2>
+<audio id="audio" controls>
+<source id="audioSource">
+</audio>
 
-<button id="randomBtn">🎲 Phát ngẫu nhiên</button>
-    
+<h2 id="title">Chọn bài hát</h2>
+
+<div class="controls">
+
+<button onclick="backHome()">🏠 Album</button>
+
+<button onclick="prevSong()">⏮</button>
+
+<button id="randomBtn">🎲</button>
+
+<button onclick="nextSong()">⏭</button>
+
+</div>
+
 </div>
 
 <div id="sidebar">
@@ -103,10 +215,14 @@ background:#444;
 
 </div>
 
-<script>
+</div>
 
+<script>
 const albums = {
-"HVL":[
+
+"HVL":{
+cover:"cover-hvl.jpg",
+songs:[
 {id:"1",title:"Wtf Bby I_m Lit",file:"3.Wtf Bby I_m Lit.mp4"},
 {id:"2",title:"Yêu Anh Giết Anh",file:"6.Yêu Anh Giết Anh.mp4"},
 {id:"3",title:"Mắt Môi Tay Chân",file:"7.Mắt Môi Tay Chân.mp4"},
@@ -136,9 +252,13 @@ const albums = {
 {id:"27",title:"Ai Mới Là Kẻ Xấu Xa",file:"14.Ai Mới Là Kẻ Xấu Xa.mp4"},
 {id:"28",title:"Slippery",file:"15.Slippery.mp4"},
 {id:"30",title:"Elegie",file:"YTDown.com_YouTube_Elegie_Media_X_mlfWmepCA_001_1080p.mp4"},         
-],
 
-"99%":[
+]
+},
+
+"99%":{
+cover:"cover-99.jpg",
+songs:[
 {id:"1",title:"00",file:"00 - MCK.mp3"},
 {id:"2",title:"50_50",file:"50_50 - MCK.mp3"},
 {id:"3",title:"99",file:"99 - MCK.mp3"},
@@ -155,59 +275,184 @@ const albums = {
 {id:"14",title:"Thờ Er",file:"Thờ Er - MCK.mp3"},
 {id:"15",title:"Suit & Tie",file:"YTDown.com_YouTube_03-Suit-_-Tie-RPT-MCK-ft-Hoang-Ton-99-th_Media_1jTSZWRFEB8_001_1080p.mp4"}, 
 {id:"16",title:"Va Vào Giai Điệu Này",file:"YTDown.com_YouTube_04-Va-Vao-Giai-Dieu-Nay-RPT-MCK-99-the-a_Media_M7UlJ0m-yy4_001_1080p.mp4"},
+
 ]
+}
 
 };
-let currentAlbum = "HVL";
-let videos = albums[currentAlbum];
-const list=document.getElementById("list");
-const video=document.getElementById("video");
-const source=document.getElementById("source");
-const title=document.getElementById("title");
-const search=document.getElementById("search");
 
-function load(arr){
-    list.innerHTML="";
-    arr.forEach(v=>{
-        const div=document.createElement("div");
-        div.className="item";
-        div.textContent=v.title;
+let currentAlbum = "";
+let currentSongs = [];
+let currentIndex = -1;
 
-        div.onclick=()=>{
-            source.src=v.file;
-            video.load();
-            video.play();
-            title.textContent=v.title;
-        };
+const home = document.getElementById("home");
+const app = document.getElementById("app");
 
-        list.appendChild(div);
-    });
+const list = document.getElementById("list");
+
+const video = document.getElementById("video");
+const videoSource = document.getElementById("videoSource");
+
+const audio = document.getElementById("audio");
+const audioSource = document.getElementById("audioSource");
+
+const title = document.getElementById("title");
+
+const search = document.getElementById("search");
+
+function openAlbum(name){
+
+currentAlbum = name;
+currentSongs = albums[name].songs;
+
+home.style.display="none";
+app.style.display="flex";
+
+search.value="";
+
+currentIndex = -1;
+renderList(currentSongs);
+
 }
-function changeAlbum(name){
-    currentAlbum = name;
-    videos = albums[name];
-    load(videos);
+
+function backHome(){
+
+video.pause();
+audio.pause();
+
+home.style.display="flex";
+app.style.display="none";
+
 }
-search.addEventListener("input",()=>{
-    const keyword=search.value.toLowerCase();
-   load(videos.filter(v => v.title.toLowerCase().includes(keyword)));
+
+function renderList(arr){
+
+list.innerHTML="";
+
+arr.forEach((song,index)=>{
+
+const div=document.createElement("div");
+
+div.className="item";
+
+div.textContent=song.title;
+
+div.onclick = () => {
+
+currentIndex = currentSongs.findIndex(s => s.file === song.file);
+
+playSong(currentIndex);
+
+};
+
+list.appendChild(div);
+
 });
 
-changeAlbum("HVL");
-function playRandom(){
-    const random = Math.floor(Math.random() * videos.length);
-    const v = videos[random];
+}
 
-    source.src=v.file;
-    video.load();
-    video.play();
-    title.textContent=v.title;
+function playSong(index){
+
+currentIndex=index;
+
+const song=currentSongs[index];
+
+title.textContent=song.title;
+
+const file=song.file.toLowerCase();
+
+video.pause();
+audio.pause();
+
+if(file.endsWith(".mp4")){
+
+audio.style.display="none";
+video.style.display="block";
+
+videoSource.src=song.file;
+
+video.load();
+
+video.play();
+
+}else{
+
+video.style.display="none";
+audio.style.display="block";
+
+audioSource.src=song.file;
+
+audio.load();
+
+audio.play();
+
+}
+
+}
+search.addEventListener("input",()=>{
+
+const keyword=search.value.toLowerCase();
+
+renderList(
+
+currentSongs.filter(song=>
+
+song.title.toLowerCase().includes(keyword)
+
+)
+
+);
+
+});
+
+function playRandom(){
+
+if(currentSongs.length===0) return;
+
+const random=Math.floor(Math.random()*currentSongs.length);
+
+playSong(random);
+
 }
 
 document.getElementById("randomBtn").onclick=playRandom;
 
-// Tự phát bài ngẫu nhiên tiếp theo khi hết bài
-video.addEventListener("ended",playRandom);
+function nextSong(){
+
+if(currentSongs.length===0) return;
+
+currentIndex++;
+
+if(currentIndex>=currentSongs.length){
+
+currentIndex=0;
+
+}
+
+playSong(currentIndex);
+
+}
+
+function prevSong(){
+
+if(currentSongs.length===0) return;
+
+currentIndex--;
+
+if(currentIndex<0){
+
+currentIndex=currentSongs.length-1;
+
+}
+
+playSong(currentIndex);
+
+}
+
+video.addEventListener("ended",nextSong);
+
+audio.addEventListener("ended",nextSong);
 </script>
+
 </body>
 </html>
