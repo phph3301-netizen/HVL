@@ -364,7 +364,27 @@ async function playSong(index){
     const song = currentSongs[index];
 
     title.textContent = song.title;
+if ("mediaSession" in navigator) {
 
+    navigator.mediaSession.setActionHandler("play", () => {
+        video.play().catch(() => {});
+        audio.play().catch(() => {});
+    });
+
+    navigator.mediaSession.setActionHandler("pause", () => {
+        video.pause();
+        audio.pause();
+    });
+
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+        nextSong();
+    });
+
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+        prevSong();
+    });
+
+}
     video.pause();
     audio.pause();
 
