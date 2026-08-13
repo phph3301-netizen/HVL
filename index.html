@@ -402,31 +402,50 @@ if ("mediaSession" in navigator) {
         video.style.display = "block";
         video.src = song.file;
 
-        try{
+       try{
+    await video.play();
 
-            await video.play();
+    if ("mediaSession" in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: song.title,
+            artist: currentAlbum,
+            album: currentAlbum,
+            artwork: [{
+                src: new URL(albums[currentAlbum].cover, document.baseURI).href,
+                sizes: "512x512",
+                type: "image/jpeg"
+            }]
+        });
+    }
 
-        }catch(err){
-
-            console.error(err);
-
-        }
+}catch(err){
+    console.error(err);
+}
 
     }else{
 
         audio.style.display = "block";
         audio.src = song.file;
 
-        try{
+  try{
+    await audio.play();
 
-            await audio.play();
+    if ("mediaSession" in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: song.title,
+            artist: currentAlbum,
+            album: currentAlbum,
+            artwork: [{
+                src: new URL(albums[currentAlbum].cover, document.baseURI).href,
+                sizes: "512x512",
+                type: "image/jpeg"
+            }]
+        });
+    }
 
-        }catch(err){
-
-            console.error(err);
-
-        }
-
+}catch(err){
+    console.error(err);
+}
     }
 
 }
