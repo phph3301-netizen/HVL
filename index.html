@@ -449,12 +449,20 @@ if ("mediaSession" in navigator) {
     }
 
 }
-search.addEventListener("input",()=>{
+function removeVietnameseTones(str){
+    return str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase();
+}
+    search.addEventListener("input",()=>{
 
-    const keyword = search.value.toLowerCase();
+    const keyword = removeVietnameseTones(search.value);
 
-    const result = currentSongs.filter(song=>
-        song.title.toLowerCase().includes(keyword)
+    const result = currentSongs.filter(song =>
+        removeVietnameseTones(song.title).includes(keyword)
     );
 
     renderList(result);
