@@ -145,16 +145,30 @@ background:#444;
 
 @media(max-width:900px){
 
+body{
+    height:auto;
+    min-height:100vh;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
 #app{
-flex-direction:column;
+    flex-direction:column;
+    height:auto;
+    min-height:100vh;
+}
+
+#player{
+    flex:none;
 }
 
 video{
-height:38vh;
+    height:38vh;
 }
 
 #sidebar{
-height:40vh;
+    height:auto;
+    overflow-y:visible;
 }
 
 }
